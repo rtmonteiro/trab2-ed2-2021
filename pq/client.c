@@ -1,7 +1,6 @@
 #include <stdio.h>
-#include <limits.h>
-#include "pq/item.h"
-#include "pq/PQ.h"
+#include "PQ.h"
+#include "item.h"
 
 Item make_item(int id, double value) {
     Item t;
@@ -10,7 +9,7 @@ Item make_item(int id, double value) {
     return t;
 }
 
-int main1() {
+int main() {
 
     // inicializando a PQ
     PQ_init(10);
@@ -32,35 +31,4 @@ int main1() {
         Item p = PQ_delmin();
         printf("Identificador %d, prioridade %lf\n", id(p), value(p));
     }
-}
-
-int main(int argc, char* argv[]) {
-
-    FILE *f = fopen(argv[1], "r");
-
-    int V, E;
-    fscanf(f, "%d %d%c", &V, &E, NULL);
-
-    int S, C, M;
-    fscanf(f, "%d %d %d%c", &S, &C, &M, NULL);
-
-    int id_S[S], id_C[C], id_M[M];
-
-    int i;
-    for (i = 0; i < S; ++i) {
-        fscanf(f, "%d%c", &id_S[i], NULL);
-    }
-    for (i = 0; i < C; ++i) {
-        fscanf(f, "%d%c", &id_C[i], NULL);
-    }
-    for (i = 0; i < M; ++i) {
-        fscanf(f, "%d%c", &id_M[i], NULL);
-    }
-
-    int id_Nos[V];
-
-    for (i = 0; i < E; ++i) {
-        // TODO Ler os vértices e armazenar na lista de adjacência
-    }
-
 }

@@ -5,21 +5,26 @@
 #ifndef PROBLEMA_DE_JOSEFO_LIST_H
 #define PROBLEMA_DE_JOSEFO_LIST_H
 
-typedef struct vertex {
-    int id;
-    double peso;
-} Vex;
+#include "pq/item.h"
+
+typedef struct List {
+    struct Node *start;
+    struct Node *end;
+} list;
 
 typedef struct Node {
-    Vex *vertice;
+    Item vertice;
     struct Node *next;
 } node;
 
-node *initList(int v);
+list *initList();
 
-node *insertNextNode(node *t, int v);
+list *insertNode(list *l, Item vertice);
 
-void deleteNextNode(node *t);
+void deleteNode(list *l);
+
+int isEmpty(list *list);
+
 
 
 #endif //PROBLEMA_DE_JOSEFO_LIST_H

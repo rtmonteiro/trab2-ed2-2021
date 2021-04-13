@@ -5,26 +5,33 @@
 #include <stdlib.h>
 #include "list.h"
 
-node *initList(int v) {
-    node *a;
-    a = (node *) malloc(sizeof(node));
-    a->next = a;
-    a->key = v;
-    return a;
+list *initList() {
+    list *l = (list *) malloc(sizeof(list));
+    l->start = NULL;
+    l->end = NULL;
+    return l;
 }
 
-node *insertNextNode(node *t, int v) {
+list *insertNode(list *l, Item vertice) {
     node *new = (node *) malloc(sizeof(node));
     new->next = NULL;
-    t->next = new;
-    new->key = v;
-    return new;
+    new->vertice = vertice;
+    if (isEmpty(l)) l->start = l->end = new;
+    else {
+        l->end->next = new;
+        l->end = new;
+    }
+    return l;
 }
 
-void deleteNextNode(node *t) {
-    node *p = t->next;
-    t->next = t->next->next;
+void deleteNode(list *l) {
+    node *p = l->end;
+    l->end = l->end->next;
     p->next = NULL;
     free(p);
+}
+
+int isEmpty(list *list) {
+    return !list->start;
 }
 

@@ -4,6 +4,14 @@
 #include "pq/PQ.h"
 #include "list.h"
 
+ typedef struct Inflacao {
+      int id_S;
+      int id_C;
+      double infl;
+ } inflacao;
+
+inflacao *make_inflacao(double infl, int s, int c);
+
 Item make_item(int id, double value) {
     Item t;
     id(t) = id;
@@ -63,7 +71,6 @@ int main(int argc, char* argv[]) {
     list **id_Nos = (list **) malloc(sizeof(list *) * V);
 
     for (i = 0; i < E; ++i) {
-        // TODO Ler os vértices e armazenar na lista de adjacência
         int id, v;
         double weight;
         fscanf(f, "%d %d %lf", &id, &v, &weight);
@@ -141,24 +148,46 @@ int main(int argc, char* argv[]) {
     
     */
 
+// TODO Algoritmo dijkstra
+// TODO Ordenar o vetor de inflações
+// TODO Imprimir os valores ordenados de inflações
     return 0;
 }
 
-/*
-void CalculaMenor(double RTT_SM[][], double RTT_CM[][], double RTT_SC_prox[][], int S, int C, int M){
+inflacao *calculaInflacoes(inflacao *vecInflacao[], double RTT_SM[][], double RTT_CM[][], double RTT_SC[][], int S, int C, int M, int id_S[], int id_C[]){
     int i, j, k;
-    double distancia, menor;
+    double distancia, rtt_prox;
     for(i = 0; i < S; ++i){
-        for(j = 0; j < C; ++j){        
-            menor = 1000;      
-            for(k = 0; k < M; ++k){       
+        for(j = 0; j < C; ++j){
+            rtt_prox = 1000;
+            for(k = 0; k < M; ++k){
                 distancia = RTT_SM[i][k] + RTT_CM[j][k];
-                if(distancia < menor){
-                    RTT_SC_prox[i][j] = distancia;
-                    menor = distancia;
-                }
+                if(distancia < rtt_prox) rtt_prox = distancia;
             }
+            vecInflacao[i + (j * S)] = make_inflacao(rtt_prox / RTT_SC[i][j], id_S[i], id_C[j]);
         }
     }
 }
-*/
+
+
+// S = 2, C = 5
+//   01234 j
+// 0 abcde
+// 1 fghij
+// i
+
+// a = [0][0] = 0 = 0 + 0 * 2
+// f = [1][0] = 1 = 1 + 0 * 2
+// c = [0][2] = 4 = 0 + 2 * 2
+// h = [1][2] = 5 = 1 + 2 * 2
+// x = [i][j] = pos = i + j * S
+// 0123456789
+// afbgchdiej
+
+inflacao *make_inflacao(double infl, int s, int c) {
+    inflacao *new = (inflacao *) malloc(sizeof(inflacao));
+    new->id_S = s;
+    new->id_C = c;
+    new->infl = infl;
+    return new;
+}

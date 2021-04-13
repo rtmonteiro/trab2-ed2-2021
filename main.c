@@ -81,12 +81,84 @@ int main(int argc, char* argv[]) {
 
     // RTT(a, b) = 𝛿(a, b) + 𝛿(b, a)
 
-    // double dist_min = dixcasca(id_Nos, id_S[0]);
+    // RTT_aprox(a, b) = min(RTT(a, m) + RTT(m, b))
+
+    // double dist_min = dixcasca(id_Nos, id_S[0])
     // for i of id_C { RTT_SC[0][i] = dist_min[id_C[i]] }
+
     // for id_M ...
 
     // double dist_min = dixcasca(id_Nos, id_C[0]);
     // for i of id_S { RTT_SC[i][0] += dist_min[id_S[i]] }
 
+    /*
+    int j;
+
+    for(j = 0; j < S; ++j){
+        double dist_min = dixcasca(id_Nos, id_S[j]);
+        
+        //𝛿(S->C)
+        for(i = 0; i < C; ++i){
+            RTT_SC[j][i] = dist_min[id_C[i]];
+        }
+
+        //𝛿(S->M)
+        for(i = 0; i < M; ++i){
+            RTT_SM[j][i] = dist_min[id_M[i]];
+        }
+    }
+
+
+    for(j = 0; j < C; ++j){
+        double dist_min = dixcasca(id_Nos, id_C[j]);
+        
+        //𝛿(C->S)
+        for(i = 0; i < S; ++i){
+            RTT_SC[i][j] += dist_min[id_S[i]];
+        }
+
+        //𝛿(C->M)
+        for(i = 0; i < M; ++i){
+            RTT_CM[j][i] = dist_min[id_M[i]];
+        }
+
+    }
+
+    for(j = 0; j < M; ++j){
+        double dist_min = dixcasca(id_Nos, id_M[j]);
+        
+        //𝛿(M->S)
+        for(i = 0; i < S; ++i){
+            RTT_SM[i][j] += dist_min[id_S[i]];
+        }
+
+        //𝛿(M->C)
+        for(i = 0; i < C; ++i){
+            RTT_CM[j][i] += dist_min[id_C[i]];
+        }
+
+    }
+    
+    */
+
     return 0;
 }
+
+/*
+void CalculaMenor(double RTT_SM[][], double RTT_CM[][], double RTT_SC_prox[][], int S, int C, int M){
+    int i, j, k;
+    double distancia, menor;
+    for(i = 0; i < S; ++i){
+        for(j = 0; j < C; ++j){        
+            menor = 1000;      
+            for(k = 0; k < M; ++k){       
+                distancia = RTT_SM[i][k] + RTT_CM[j][k];
+                if(distancia < menor){
+                    RTT_SC_prox[i][j] = distancia;
+                    menor = distancia;
+                }
+            }
+        }
+    }
+}
+*/

@@ -4,7 +4,7 @@
 #include "pq/PQ.h"
 #include "list.h"
 
- typedef struct Inflacao {
+typedef struct Inflacao {
       int id_S;
       int id_C;
       double infl;
@@ -12,12 +12,16 @@
 
 inflacao *make_inflacao(double infl, int s, int c);
 
+void *calculaInflacoes(inflacao *vecInflacao[], double RTT_SM[][], double RTT_CM[][], double RTT_SC[][], int S, int C, int M, int id_S[], int id_C[]);
+
 Item make_item(int id, double value) {
     Item t;
     id(t) = id;
     value(t) = value;
     return t;
 }
+
+int compareDistancia (const void *a, const void *b);
 
 //int main1() {
 //
@@ -78,31 +82,18 @@ int main(int argc, char* argv[]) {
         id_Nos[id] = insertNode(id_Nos[id], make_item(v, weight));
     }
 
-    // double RTT_SC[S][C]
-    // double RTT_SM[S][M]
-    // double RTT_CM[C][M]
-    // double RTT_SC_prox[S][C]
-
-    // RTT_SM[0][7][0] = 𝛿(S->M)
-    // RTT_SM[0][7][1] = 𝛿(M->S)
+    double RTT_SC[S][C];
+    double RTT_SM[S][M];
+    double RTT_CM[C][M];
 
     // RTT(a, b) = 𝛿(a, b) + 𝛿(b, a)
 
     // RTT_aprox(a, b) = min(RTT(a, m) + RTT(m, b))
-
-    // double dist_min = dixcasca(id_Nos, id_S[0])
-    // for i of id_C { RTT_SC[0][i] = dist_min[id_C[i]] }
-
-    // for id_M ...
-
-    // double dist_min = dixcasca(id_Nos, id_C[0]);
-    // for i of id_S { RTT_SC[i][0] += dist_min[id_S[i]] }
-
-    /*
+    
     int j;
 
     for(j = 0; j < S; ++j){
-        double dist_min = dixcasca(id_Nos, id_S[j]);
+        double dist_min[V] = dixcasca(id_Nos, id_S[j]);
         
         //𝛿(S->C)
         for(i = 0; i < C; ++i){
@@ -117,7 +108,7 @@ int main(int argc, char* argv[]) {
 
 
     for(j = 0; j < C; ++j){
-        double dist_min = dixcasca(id_Nos, id_C[j]);
+        double dist_min[V] = dixcasca(id_Nos, id_C[j]);
         
         //𝛿(C->S)
         for(i = 0; i < S; ++i){
@@ -132,7 +123,7 @@ int main(int argc, char* argv[]) {
     }
 
     for(j = 0; j < M; ++j){
-        double dist_min = dixcasca(id_Nos, id_M[j]);
+        double dist_min[V] = dixcasca(id_Nos, id_M[j]);
         
         //𝛿(M->S)
         for(i = 0; i < S; ++i){
@@ -145,8 +136,13 @@ int main(int argc, char* argv[]) {
         }
 
     }
+
+    inflacao** vecInflacao = (inflacao**)malloc(sizeof(inflacao*)*S*C);
     
-    */
+    calculaInflacoes(vecInflacao, RTT_SM, RTT_CM, RTT_SC, S, C, M, id_S, id_C);
+    
+    qsort(vecInflacao, S*C, sizeof(inflacao*), compareDistancia);
+    
 
 // TODO Algoritmo dijkstra
 // TODO Ordenar o vetor de inflações
@@ -154,7 +150,7 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-inflacao *calculaInflacoes(inflacao *vecInflacao[], double RTT_SM[][], double RTT_CM[][], double RTT_SC[][], int S, int C, int M, int id_S[], int id_C[]){
+void *calculaInflacoes(inflacao *vecInflacao[], double RTT_SM[][], double RTT_CM[][], double RTT_SC[][], int S, int C, int M, int id_S[], int id_C[]){
     int i, j, k;
     double distancia, rtt_prox;
     for(i = 0; i < S; ++i){
@@ -191,3 +187,16 @@ inflacao *make_inflacao(double infl, int s, int c) {
     new->infl = infl;
     return new;
 }
+
+ int compareDistancia (const void *a, const void *b) {	
+    const inflacao **a1 = a;
+    const inflacao **a2 = b;
+    if ( (*a1)->infl == (*a2)->infl ){
+        return 0;
+    }
+    else if ( (*a1)->infl < (*a2)->infl ){
+        return -1;
+    }else 
+        return 1;
+}
+ 

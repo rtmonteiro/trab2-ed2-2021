@@ -13,10 +13,9 @@ typedef struct Inflacao {
 
 inflacao *make_inflacao(double infl, int s, int c);
 
-void calculaInflacoes(inflacao **vecInflacao,
-                      int S, int C, int M,
-                      double RTT_SM[S][M], double RTT_CM[C][M], double RTT_SC[S][C],
-                      int *id_S, int *id_C);
+inflacao **calculaInflacoes(int S, int C, int M,
+                            double RTT_SM[S][M], double RTT_CM[C][M], double RTT_SC[S][C],
+                            int *id_S, int *id_C);
 
 Item make_item(int id, double value) {
     Item t;
@@ -118,20 +117,23 @@ int main(int argc, char* argv[]) {
 
     }
 
-     inflacao** vecInflacao = (inflacao**)malloc(sizeof(inflacao*)*S*C);
+    inflacao **vecInflacao = calculaInflacoes(S, C, M, RTT_SM, RTT_CM, RTT_SC, id_S, id_C);
     
-     calculaInflacoes(vecInflacao, S, C, M, RTT_SM, RTT_CM, RTT_SC, id_S, id_C);
-    
-     qsort(vecInflacao, S*C, sizeof(inflacao*), compareDistancia);
+     //qsort(vecInflacao, S*C, sizeof(inflacao*), compareDistancia);
+
+    //FILE *out = fopen(argv[2]);
+    printf("--------------\n");
+    for(int g = 0; g < S*C; g++){
+        printf("%d %d %.15lf\n", vecInflacao[g]->id_S, vecInflacao[g]->id_C, vecInflacao[g]->infl );
+    }
 
 // TODO Imprimir os valores ordenados de inflações
     return 0;
 }
 
-void calculaInflacoes(inflacao **vecInflacao,
-                      int S, int C, int M,
-                      double RTT_SM[S][M], double RTT_CM[C][M], double RTT_SC[S][C],
-                      int *id_S, int *id_C){
+inflacao **calculaInflacoes(int S, int C, int M, double RTT_SM[S][M], double RTT_CM[C][M], double RTT_SC[S][C], int *id_S, int *id_C) {
+
+    inflacao** vecInflacao = (inflacao**) malloc(sizeof(inflacao*)*S*C);
 
     int i, j, k, count = 0;
     double distancia, rtt_prox;
@@ -147,29 +149,9 @@ void calculaInflacoes(inflacao **vecInflacao,
     }
     
     qsort(vecInflacao, S*C, sizeof(inflacao*), compareDistancia);
-    
-    /*printf("--------------\n");
-    for(int g; g < S*C; g++){
-        printf("%d %d %.15lf\n", vecInflacao[g]->id_S, vecInflacao[g]->id_C, vecInflacao[g]->infl );
-    }*/
 
-
+    return vecInflacao;
 }
-
-
-// S = 2, C = 5
-//   01234 j
-// 0 abcde
-// 1 fghij
-// i
-
-// a = [0][0] = 0 = 0 + 0 * 2
-// f = [1][0] = 1 = 1 + 0 * 2
-// c = [0][2] = 4 = 0 + 2 * 2
-// h = [1][2] = 5 = 1 + 2 * 2
-// x = [i][j] = pos = i + j * S
-// 0123456789
-// afbgchdiej
 
 inflacao *make_inflacao(double infl, int s, int c) {
     inflacao *new = (inflacao *) malloc(sizeof(inflacao));

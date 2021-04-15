@@ -25,13 +25,23 @@ list *insertNode(list *l, Item vertice) {
 }
 
 void deleteNode(list *l) {
-    node *p = l->end;
-    l->end = l->end->next;
+    node *p = l->start;
+    if (l->start->next == NULL) l->end = NULL;
+    l->start = l->start->next;
     p->next = NULL;
     free(p);
 }
 
 int isEmpty(list *list) {
     return !list->start;
+}
+
+void freeArrayList(list ** al, int V) {
+    for (int i = V - 1; i >= 0; ++i) {
+        while (al[i]->start != NULL) {
+            deleteNode(al[i]);
+        }
+        free(al[i]);
+    }
 }
 

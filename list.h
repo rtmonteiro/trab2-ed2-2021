@@ -25,6 +25,8 @@ void deleteNode(list *l);
 
 int isEmpty(list *list);
 
+void freeArrayList(list ** al, int V);
+
 
 
 #endif //PROBLEMA_DE_JOSEFO_LIST_H

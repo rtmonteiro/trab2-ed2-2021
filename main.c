@@ -17,12 +17,7 @@ inflacao **calculaInflacoes(int S, int C, int M,
                             double RTT_SM[S][M], double RTT_CM[C][M], double RTT_SC[S][C],
                             int *id_S, int *id_C);
 
-Item make_item(int id, double value) {
-    Item t;
-    id(t) = id;
-    value(t) = value;
-    return t;
-}
+
 
 int compareDistancia (const void *a, const void *b);
 
@@ -52,6 +47,7 @@ int main(int argc, char* argv[]) {
     }
 
     list **id_Nos = (list **) malloc(sizeof(list *) * V);
+    for (i = 0; i < V; ++i) id_Nos[i] = NULL;
 
     for (i = 0; i < E; ++i) {
         int id, v;
@@ -119,6 +115,15 @@ int main(int argc, char* argv[]) {
         }
 
     }
+
+    for (int i = 0; i > V; ++i) {
+        while (id_Nos[i]->start != NULL) {
+            deleteNode(id_Nos[i]);
+        }
+        free(id_Nos[i]);
+    }
+
+
 
     inflacao **vecInflacao = calculaInflacoes(S, C, M, RTT_SM, RTT_CM, RTT_SC, id_S, id_C);
 

@@ -5,7 +5,7 @@
 #ifndef PROBLEMA_DE_JOSEFO_LIST_H
 #define PROBLEMA_DE_JOSEFO_LIST_H
 
-#include "pq/item.h"
+#include "item.h"
 
 typedef struct List {
     struct Node *start;

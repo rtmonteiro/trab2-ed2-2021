@@ -1,6 +1,4 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "PQ.h"
 
 static void swap(int i, int j, PQ_Struct *pq_struct) {

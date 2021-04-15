@@ -3,4 +3,4 @@ project(trab2___RTT C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(trab2___RTT main.c pq/PQ.c pq/PQ.h pq/item.h list.c list.h)
+add_executable(trab2___RTT main.c PQ.h PQ.c item.h list.c list.h)

@@ -9,7 +9,7 @@ typedef struct Inflacao {
       int id_S;
       int id_C;
       double infl;
- } inflacao;
+} inflacao;
 
 inflacao *make_inflacao(double infl, int s, int c);
 
@@ -28,32 +28,6 @@ Item make_item(int id, double value) {
 int compareDistancia (const void *a, const void *b);
 
 double *dixcasca(int s, int V, list *grafo[V]);
-
-//int main1() {
-//
-//    // inicializando a PQ
-//    PQ_init(10);
-//
-//    // inserindo alguns elementos na PQ
-//    PQ_insert(make_item(1, 10.0));
-//    PQ_insert(make_item(6, 5.0));
-//    PQ_insert(make_item(3, 3.0));
-//    PQ_insert(make_item(4, 4.0));
-//    PQ_insert(make_item(7, 7.0));
-//    PQ_insert(make_item(2, 1.0));
-//
-//    // alterando a prioridade de alguns elementos
-//    PQ_decrease_key(4, 0.5); // agora o nó 4 tem valor 0.5, sua posição no heap deve mudar
-//    PQ_decrease_key(6, 0.1); // agora o nó 6 tem valor 0.1, sua posição no heap deve mudar
-//
-//    // removendo o menor elemento e imprimindo
-//    while (!PQ_empty()) {
-//        Item p = PQ_delmin();
-//        printf("Identificador %d, prioridade %lf\n", id(p), value(p));
-//    }
-//
-//    return 0;
-//}
 
 int main(int argc, char* argv[]) {
 
@@ -116,13 +90,6 @@ int main(int argc, char* argv[]) {
 
     for(j = 0; j < C; ++j){
         double *dist_min = dixcasca(id_C[j], V, id_Nos);
-        
-        //         for(int g = 0; g < V; g++){
-        //         printf("%d - %d = %.20lf\n ", j, g, dist_min[g]);
-        // }
-        // printf("\n");
-        // printf("----------------\n");
-
 
         //𝛿(C->S)
         for(i = 0; i < S; ++i){
@@ -157,8 +124,6 @@ int main(int argc, char* argv[]) {
     
      qsort(vecInflacao, S*C, sizeof(inflacao*), compareDistancia);
 
-// TODO Algoritmo dijkstra
-// TODO Ordenar o vetor de inflações
 // TODO Imprimir os valores ordenados de inflações
     return 0;
 }
@@ -168,33 +133,7 @@ void calculaInflacoes(inflacao **vecInflacao,
                       double RTT_SM[S][M], double RTT_CM[C][M], double RTT_SC[S][C],
                       int *id_S, int *id_C){
 
-    // for(int f = 0; f < S; f++){
-    //         for(int g = 0; g < C; g++){
-    //             printf("%lf  ", RTT_SM[f][g]);
-    //         }
-    //         printf("\n");
-    //     }
-    // printf("--------------\n");
-
-    // for(int f = 0; f < S; f++){
-    //         for(int g = 0; g < C; g++){
-    //             printf("%lf ", RTT_CM[f][g]);
-    //         }
-    //         printf("\n");
-    //     }
-    // printf("--------------\n");
-
-    // for(int f = 0; f < S; f++){
-    //         for(int g = 0; g < C; g++){
-    //             printf("%lf ", RTT_SC[f][g]);
-    //         }
-    //         printf("\n");
-    //     }
-    //  printf("--------------\n");
-
-
-
-    int i, j, k, cont = 0;
+    int i, j, k, count = 0;
     double distancia, rtt_prox;
     for(i = 0; i < S; ++i){
         for(j = 0; j < C; ++j){
@@ -202,19 +141,17 @@ void calculaInflacoes(inflacao **vecInflacao,
             for(k = 0; k < M; ++k){
                 distancia = RTT_SM[i][k] + RTT_CM[j][k];
                 if(distancia < rtt_prox) rtt_prox = distancia;
-                //printf("rtt_prox - %d e %d = %.20lf\n", id_S[i], id_C[j], rtt_prox);
             }
-            vecInflacao[cont] = make_inflacao(rtt_prox / RTT_SC[i][j], id_S[i], id_C[j]);
-            cont++;
+            vecInflacao[count++] = make_inflacao(rtt_prox / RTT_SC[i][j], id_S[i], id_C[j]);
         }
     }
     
     qsort(vecInflacao, S*C, sizeof(inflacao*), compareDistancia);
     
-    printf("--------------\n");
+    /*printf("--------------\n");
     for(int g; g < S*C; g++){
         printf("%d %d %.15lf\n", vecInflacao[g]->id_S, vecInflacao[g]->id_C, vecInflacao[g]->infl );
-    }
+    }*/
 
 
 }
@@ -260,18 +197,19 @@ double *dixcasca(int s, int V, list **grafo) {
     dist_min[s] = 0;
 
     PQ_Struct *pq_struct = PQ_init(V);
+    PQ_insert(make_item(s, 0), pq_struct);
 
     for (int i = 0; i < V; ++i) {
-        if (i != s) dist_min[i] = INT_MAX;
-
-        PQ_insert(make_item(i, dist_min[i]), pq_struct);
+        if (i != s) {
+            dist_min[i] = INT_MAX;
+            PQ_insert(make_item(i, INT_MAX), pq_struct);
+        }
     }
 
     while (!PQ_empty(pq_struct)) {
         Item u = PQ_delmin(pq_struct);
         for (node *p = grafo[u.id]->start; p != NULL; p = p->next) {
             double dist = dist_min[u.id] + p->vertice.value;
-            //printf("%d - %d - %lf\n", u.id, p->vertice.id, dist);
             if (dist < dist_min[p->vertice.id]) {
                 dist_min[p->vertice.id] = dist;
                 PQ_decrease_key(p->vertice.id, dist, pq_struct);
@@ -281,30 +219,4 @@ double *dixcasca(int s, int V, list **grafo) {
 
     return dist_min;
 }
-
-/*
-1 function Dijkstra(Graph, source):
-2      dist[source] ← 0                           // Initialization
-3
-4      create vertex priority queue Q
-5
-6      for each vertex v in Graph:
-7          if v ≠ source
-8              dist[v] ← INFINITY                 // Unknown distance from source to v
-9              prev[v] ← UNDEFINED                // Predecessor of v
-10
-11         Q.add_with_priority(v, dist[v])
-12
-13
-14     while Q is not empty:                      // The main loop
-15         u ← Q.extract_min()                    // Remove and return best vertex
-16         for each neighbor v of u:              // only v that are still in Q
-17             alt ← dist[u] + length(u, v)
-18             if alt < dist[v]
-19                 dist[v] ← alt
-20                 prev[v] ← u
-21                 Q.decrease_priority(v, alt)
-22
-23     return dist, prev
- */
  

@@ -100,12 +100,13 @@ int main(int argc, char* argv[]) {
 
     for(j = 0; j < S; ++j){
         double *dist_min = dixcasca(id_S[j], V, id_Nos);
-        
+
         //𝛿(S->C)
         for(i = 0; i < C; ++i){
             RTT_SC[j][i] = dist_min[id_C[i]];
         }
 
+        
         //𝛿(S->M)
         for(i = 0; i < M; ++i){
             RTT_SM[j][i] = dist_min[id_M[i]];
@@ -143,12 +144,12 @@ int main(int argc, char* argv[]) {
 
     }
 
-    inflacao** vecInflacao = (inflacao**)malloc(sizeof(inflacao*)*S*C);
+     inflacao** vecInflacao = (inflacao**)malloc(sizeof(inflacao*)*S*C);
     
-    calculaInflacoes(vecInflacao, S, C, M, RTT_SM, RTT_CM, RTT_SC, id_S, id_C);
+     calculaInflacoes(vecInflacao, S, C, M, RTT_SM, RTT_CM, RTT_SC, id_S, id_C);
     
-    qsort(vecInflacao, S*C, sizeof(inflacao*), compareDistancia);
-    
+     qsort(vecInflacao, S*C, sizeof(inflacao*), compareDistancia);
+
 
 // TODO Algoritmo dijkstra
 // TODO Ordenar o vetor de inflações
@@ -160,6 +161,33 @@ void calculaInflacoes(inflacao **vecInflacao,
                       int S, int C, int M,
                       double RTT_SM[S][M], double RTT_CM[C][M], double RTT_SC[S][C],
                       int *id_S, int *id_C){
+
+    // for(int f = 0; f < S; f++){
+    //         for(int g = 0; g < C; g++){
+    //             printf("%lf  ", RTT_SM[f][g]);
+    //         }
+    //         printf("\n");
+    //     }
+    // printf("--------------\n");
+
+    // for(int f = 0; f < S; f++){
+    //         for(int g = 0; g < C; g++){
+    //             printf("%lf ", RTT_CM[f][g]);
+    //         }
+    //         printf("\n");
+    //     }
+    // printf("--------------\n");
+
+    // for(int f = 0; f < S; f++){
+    //         for(int g = 0; g < C; g++){
+    //             printf("%lf ", RTT_SC[f][g]);
+    //         }
+    //         printf("\n");
+    //     }
+    // printf("--------------\n");
+
+
+
     int i, j, k;
     double distancia, rtt_prox;
     for(i = 0; i < S; ++i){
@@ -172,6 +200,10 @@ void calculaInflacoes(inflacao **vecInflacao,
             vecInflacao[i + (j * S)] = make_inflacao(rtt_prox / RTT_SC[i][j], id_S[i], id_C[j]);
         }
     }
+
+    // for(int g; g < S*C; g++){
+    //     printf("%d %d %lf\n", vecInflacao[g]->id_S, vecInflacao[g]->id_C, vecInflacao[g]->infl );
+    // }
 }
 
 
@@ -219,19 +251,21 @@ double *dixcasca(int s, int V, list **grafo) {
     for (int i = 0; i < V; ++i) {
         if (i != s) dist_min[i] = INT_MAX;
 
-        PQ_insert(make_item(i, INT_MAX), pq_struct);
+        PQ_insert(make_item(i, dist_min[i]), pq_struct);
     }
 
     while (!PQ_empty(pq_struct)) {
         Item u = PQ_delmin(pq_struct);
         for (node *p = grafo[u.id]->start; p != NULL; p = p->next) {
             double dist = dist_min[u.id] + p->vertice.value;
+            //printf("%d - %d - %lf\n", u.id, p->vertice.id, dist);
             if (dist < dist_min[p->vertice.id]) {
-                dist_min[s] = dist;
+                dist_min[p->vertice.id] = dist;
                 PQ_decrease_key(p->vertice.id, dist, pq_struct);
             }
         }
     }
+
     return dist_min;
 }
 

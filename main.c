@@ -61,6 +61,9 @@ int main(int argc, char* argv[]) {
         id_Nos[id] = insertNode(id_Nos[id], make_item(v, weight));
     }
 
+    fclose(f);
+
+
     double RTT_SC[S][C];
     double RTT_SM[S][M];
     double RTT_CM[C][M];
@@ -118,16 +121,14 @@ int main(int argc, char* argv[]) {
     }
 
     inflacao **vecInflacao = calculaInflacoes(S, C, M, RTT_SM, RTT_CM, RTT_SC, id_S, id_C);
-    
-     //qsort(vecInflacao, S*C, sizeof(inflacao*), compareDistancia);
 
-    //FILE *out = fopen(argv[2]);
-    printf("--------------\n");
+    FILE *out = fopen(argv[2], "w");
+
     for(int g = 0; g < S*C; g++){
-        printf("%d %d %.15lf\n", vecInflacao[g]->id_S, vecInflacao[g]->id_C, vecInflacao[g]->infl );
+        fprintf(out,"%d %d %.16lf\n", vecInflacao[g]->id_S, vecInflacao[g]->id_C, vecInflacao[g]->infl );
     }
 
-// TODO Imprimir os valores ordenados de inflações
+    fclose(out);
     return 0;
 }
 

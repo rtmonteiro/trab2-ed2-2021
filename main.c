@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-#include "pq/item.h"
-#include "pq/PQ.h"
+#include "item.h"
+#include "PQ.h"
 #include "list.h"
 
 typedef struct Inflacao {
@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
 
     for(j = 0; j < S; ++j){
         double *dist_min = dixcasca(id_S[j], V, id_Nos);
-
+        
         //𝛿(S->C)
         for(i = 0; i < C; ++i){
             RTT_SC[j][i] = dist_min[id_C[i]];
@@ -117,6 +117,13 @@ int main(int argc, char* argv[]) {
     for(j = 0; j < C; ++j){
         double *dist_min = dixcasca(id_C[j], V, id_Nos);
         
+        //         for(int g = 0; g < V; g++){
+        //         printf("%d - %d = %.20lf\n ", j, g, dist_min[g]);
+        // }
+        // printf("\n");
+        // printf("----------------\n");
+
+
         //𝛿(C->S)
         for(i = 0; i < S; ++i){
             RTT_SC[i][j] += dist_min[id_S[i]];
@@ -139,7 +146,7 @@ int main(int argc, char* argv[]) {
 
         //𝛿(M->C)
         for(i = 0; i < C; ++i){
-            RTT_CM[j][i] += dist_min[id_C[i]];
+            RTT_CM[i][j] += dist_min[id_C[i]];
         }
 
     }
@@ -149,7 +156,6 @@ int main(int argc, char* argv[]) {
      calculaInflacoes(vecInflacao, S, C, M, RTT_SM, RTT_CM, RTT_SC, id_S, id_C);
     
      qsort(vecInflacao, S*C, sizeof(inflacao*), compareDistancia);
-
 
 // TODO Algoritmo dijkstra
 // TODO Ordenar o vetor de inflações
@@ -184,11 +190,11 @@ void calculaInflacoes(inflacao **vecInflacao,
     //         }
     //         printf("\n");
     //     }
-    // printf("--------------\n");
+    //  printf("--------------\n");
 
 
 
-    int i, j, k;
+    int i, j, k, cont = 0;
     double distancia, rtt_prox;
     for(i = 0; i < S; ++i){
         for(j = 0; j < C; ++j){
@@ -196,14 +202,21 @@ void calculaInflacoes(inflacao **vecInflacao,
             for(k = 0; k < M; ++k){
                 distancia = RTT_SM[i][k] + RTT_CM[j][k];
                 if(distancia < rtt_prox) rtt_prox = distancia;
+                //printf("rtt_prox - %d e %d = %.20lf\n", id_S[i], id_C[j], rtt_prox);
             }
-            vecInflacao[i + (j * S)] = make_inflacao(rtt_prox / RTT_SC[i][j], id_S[i], id_C[j]);
+            vecInflacao[cont] = make_inflacao(rtt_prox / RTT_SC[i][j], id_S[i], id_C[j]);
+            cont++;
         }
     }
+    
+    qsort(vecInflacao, S*C, sizeof(inflacao*), compareDistancia);
+    
+    printf("--------------\n");
+    for(int g; g < S*C; g++){
+        printf("%d %d %.15lf\n", vecInflacao[g]->id_S, vecInflacao[g]->id_C, vecInflacao[g]->infl );
+    }
 
-    // for(int g; g < S*C; g++){
-    //     printf("%d %d %lf\n", vecInflacao[g]->id_S, vecInflacao[g]->id_C, vecInflacao[g]->infl );
-    // }
+
 }
 
 

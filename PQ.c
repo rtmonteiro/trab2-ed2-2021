@@ -9,8 +9,7 @@ static void swap(int i, int j, PQ_Struct *pq_struct) {
     pq_struct->map[id(pq_struct->pq[j])] = j;
 }
 
-void fix_up(Item *a, int k, PQ_Struct *pq_struct) {
-    
+void fix_up(Item *a, int k, PQ_Struct *pq_struct) {  
     while (k > 1 && more(a[k/2], a[k])) {
         swap(k, k/2, pq_struct);
         k = k/2;
@@ -37,6 +36,7 @@ PQ_Struct * PQ_init(int maxN) {
     new->map = (int *) malloc((maxN+1) * sizeof (int));
     for(int i = 0; i < maxN; i++) new->map[i] = -1;
     new->N = 0;
+
     return new;
 }
 

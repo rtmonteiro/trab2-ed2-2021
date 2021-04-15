@@ -21,7 +21,7 @@ inflacao **calculaInflacoes(int S, int C, int M,
 
 int compareDistancia (const void *a, const void *b);
 
-double *dixcasca(int s, int V, list *grafo[V]);
+double *dixcasca(int s, int V, list **grafo, double *dist_min);
 
 int main(int argc, char* argv[]) {
 
@@ -70,8 +70,10 @@ int main(int argc, char* argv[]) {
     
     int j;
 
+    double *dist_min = (double *) malloc(sizeof(double) * V);
+
     for(j = 0; j < S; ++j){
-        double *dist_min = dixcasca(id_S[j], V, id_Nos);
+        dist_min = dixcasca(id_S[j], V, id_Nos, dist_min);
         
         //𝛿(S->C)
         for(i = 0; i < C; ++i){
@@ -87,7 +89,7 @@ int main(int argc, char* argv[]) {
 
 
     for(j = 0; j < C; ++j){
-        double *dist_min = dixcasca(id_C[j], V, id_Nos);
+        dist_min = dixcasca(id_C[j], V, id_Nos, dist_min);
 
         //𝛿(C->S)
         for(i = 0; i < S; ++i){
@@ -98,11 +100,10 @@ int main(int argc, char* argv[]) {
         for(i = 0; i < M; ++i){
             RTT_CM[j][i] = dist_min[id_M[i]];
         }
-
     }
 
     for(j = 0; j < M; ++j){
-        double *dist_min = dixcasca(id_M[j], V, id_Nos);
+        dist_min = dixcasca(id_M[j], V, id_Nos, dist_min);
         
         //𝛿(M->S)
         for(i = 0; i < S; ++i){
@@ -113,15 +114,17 @@ int main(int argc, char* argv[]) {
         for(i = 0; i < C; ++i){
             RTT_CM[i][j] += dist_min[id_C[i]];
         }
-
     }
 
-    for (int i = 0; i > V; ++i) {
+    free(dist_min);
+
+    for (i= 0; i < V; ++i) {
         while (id_Nos[i]->start != NULL) {
             deleteNode(id_Nos[i]);
         }
         free(id_Nos[i]);
     }
+    free(id_Nos);
 
 
 
@@ -129,15 +132,23 @@ int main(int argc, char* argv[]) {
 
     FILE *out = fopen(argv[2], "w");
 
-    for(int g = 0; g < S*C; g++){
-        fprintf(out,"%d %d %.16lf\n", vecInflacao[g]->id_S, vecInflacao[g]->id_C, vecInflacao[g]->infl );
+    for(i = 0; i < S*C; i++){
+        fprintf(out,"%d %d %.16lf\n", vecInflacao[i]->id_S, vecInflacao[i]->id_C, vecInflacao[i]->infl );
     }
 
     fclose(out);
+
+    for ( i = 0; i < S*C; ++i) {
+        free(vecInflacao[i]);
+    }
+    free(vecInflacao);
+
     return 0;
 }
 
-inflacao **calculaInflacoes(int S, int C, int M, double RTT_SM[S][M], double RTT_CM[C][M], double RTT_SC[S][C], int *id_S, int *id_C) {
+inflacao **calculaInflacoes(int S, int C, int M,
+                            double RTT_SM[S][M], double RTT_CM[C][M], double RTT_SC[S][C],
+                            int *id_S, int *id_C) {
 
     inflacao** vecInflacao = (inflacao**) malloc(sizeof(inflacao*)*S*C);
 
@@ -179,8 +190,7 @@ inflacao *make_inflacao(double infl, int s, int c) {
         return 1;
 }
 
-double *dixcasca(int s, int V, list **grafo) {
-    double *dist_min = (double *) malloc(sizeof(double) * V);
+double *dixcasca(int s, int V, list **grafo, double *dist_min) {
 
     dist_min[s] = 0;
 
@@ -204,6 +214,8 @@ double *dixcasca(int s, int V, list **grafo) {
             }
         }
     }
+    PQ_finish(pq_struct);
+    free(pq_struct);
 
     return dist_min;
 }
